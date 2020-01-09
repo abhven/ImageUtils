@@ -20,7 +20,7 @@ dir:
 
 %: $(SRCDIR)/%.cpp
 	@echo "Building.."
-	${CC} ${LINKERFLAG} $< -o $(BLDDIR)/$@
+	${CC} ${LINKERFLAG} $< -o $(BLDDIR)/$@ -ljpeg
 
 
 clean:
