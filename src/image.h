@@ -5,6 +5,7 @@
 #include<string>
 #include<jpeglib.h>
 #include<string>
+#include<fstream>
 
 class Image{
     private:
@@ -17,6 +18,7 @@ class Image{
     public:
 	Image (char * filename);
 	void print_info();
+	void write_ppm(const std::string filename);
 	int blur_image(std::vector<std::vector<float>> kernel);
 
 };
@@ -25,6 +27,21 @@ void Image::print_info(){
 	std::cout<<"\n---- IMAGE INFO ----\n";
 	std::cout<<"Height: "<<this->height<<"\nWidth: "<<this->width<<"\nFormat: "<<this->format;
 	std::cout<<"\n--------------------\n";
+}
+
+void Image::write_ppm(const std::string filename) {
+
+    std::ofstream ofs( filename, std::ios::out | std::ios::binary );
+    if ( ! ofs )
+        throw std::runtime_error("Could not open " + filename + " for saving");
+
+    //header
+    ofs << "P6 " << width << " " << height << " 255\n";
+    for ( auto& v : bitmap )
+    {
+        ofs.write( reinterpret_cast<const char *>(v.data()), v.size() );
+    }
+    ofs.close();
 }
 
 Image::Image (char * filename)

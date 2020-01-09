@@ -11,9 +11,11 @@ int read_JPEG_file (char * filename);
 
 int main(int argc, char *argv[])
 {
-	if(argc > 1){
+	if(argc > 1) {
 		Image im(argv[1]);
 		im.print_info();
+		if(argc > 2)
+			im.write_ppm("output/lena.ppm");
 	}
 	return 0;
 }
