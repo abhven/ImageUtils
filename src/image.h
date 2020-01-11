@@ -6,6 +6,7 @@
 #include<jpeglib.h>
 #include<string>
 #include<fstream>
+#include<cassert>
 
 class Image{
     private:
@@ -19,7 +20,7 @@ class Image{
 	Image (char * filename);
 	void print_info();
 	void write_ppm(const std::string filename);
-	int blur_image(std::vector<std::vector<float>> kernel);
+	void blur_image(std::vector<std::vector<float>>& kernel);
 
 };
 
@@ -27,6 +28,38 @@ void Image::print_info(){
 	std::cout<<"\n---- IMAGE INFO ----\n";
 	std::cout<<"Height: "<<this->height<<"\nWidth: "<<this->width<<"\nFormat: "<<this->format;
 	std::cout<<"\n--------------------\n";
+}
+
+void Image::blur_image(std::vector<std::vector<float>>& kernel){
+	int k_height = kernel.size();
+	assert(k_height);
+	int k_width  = kernel[0].size();
+	assert(k_width);
+	std::vector<std::vector<uint8_t>> out;
+	for(int i = 0; i< this->height; i++) {
+		std::vector<uint8_t> out_row(this->stride);
+		for(int j = 0; j< this->width; j++) {
+			float val[3] = {0.f, 0.f, 0.f};
+			float wt  = 0.f;
+			for(int k_i = 0; k_i < k_height; k_i++)
+			for(int k_j = 0; k_j< k_width; k_j++){
+				int x = i - k_i + k_height/2;
+				int y = j - k_j + k_width/2;
+				if(x> 0 && y>0 && x< this->height && y< this->width) {
+					val[0] += this->bitmap[x][y*3 + 0] * kernel[k_i][k_j];
+					val[1] += this->bitmap[x][y*3 + 1] * kernel[k_i][k_j];
+					val[2] += this->bitmap[x][y*3 + 2] * kernel[k_i][k_j];
+					wt  += kernel[k_i][k_j];
+				}
+			}
+			out_row[j*3 + 0] = val[0]/ wt;
+			out_row[j*3 + 1] = val[1]/ wt;
+			out_row[j*3 + 2] = val[2]/ wt;
+		}
+		out.push_back(out_row);
+	}
+	this->bitmap = out;
+	return;
 }
 
 void Image::write_ppm(const std::string filename) {
