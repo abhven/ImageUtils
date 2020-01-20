@@ -5,14 +5,14 @@
 #include<string>
 
 class Image{
-    private:
+	private:
 		std::vector< std::vector <uint8_t>> bitmap;
 		size_t     width;  /* Width of the image  */
 		size_t     height; /* Height of the image */
 		size_t     stride; /* physical row width in output buffer. Typically for RGB image stride is 3*width */
 		std::string 	   format; /* format of the bitmap */
 		int        state;
-    public:
+	public:
 		Image (char * filename);
 		void print_info();
 		void write_ppm(const std::string filename);
